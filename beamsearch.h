@@ -1,0 +1,1 @@
+Permuta* beamSearch(Job** entrada, int n, int w);
