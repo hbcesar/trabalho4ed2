@@ -15,27 +15,24 @@ Permuta* branchAndBound(Job** entrada, int limite, int n){
 		item = lista->primeiro;
 		lista->primeiro = lista->primeiro->proximo;
 
-		if(!eFolha(item)){
-		 		//gera os filhos de item e (se for o caso) os insere na lista
-				for(i=0; i < item->qtdeNaoPosicionados; i++){
-					filho = criarFilho(item, n, i);
+		 //gera os filhos de item e (se for o caso) os insere na lista
+		for(i=0; i < item->qtdeNaoPosicionados; i++){
+			filho = criarFilho(item, n, i);
 
-					//caso tiverem um melhor caso pior do que o atual, são descartados
-					if(filho->lowerbound > limiteUB){
-					 	liberarPermuta(filho);
-					} else {
-					 	lista = inserir(lista, filho);
-					}
-				}
-				liberarPermuta(item);
-		} else {
-			//se forem nós folhas, são descartados ou é atualizado o melhor caso
-			if(item->lowerbound > limiteUB){
-				liberarPermuta(item);
-			} else if(item->upperbound <= limiteUB){
-				melhor = item;
-				limiteUB = item->upperbound;
+			//caso tiverem um melhor caso pior do que o atual, são descartados
+			if(filho->lowerbound > limiteUB){
+				liberarPermuta(filho);
+			} else {
+				lista = inserir(lista, filho);
 			}
+		}
+
+		//se forem nós folhas, são descartados, otherwise é atualizado o melhor caso
+		if(item->upperbound <= limiteUB){
+			melhor = item;
+			limiteUB = item->upperbound;
+		} else {
+			liberarPermuta(item);
 		}
 	}
 

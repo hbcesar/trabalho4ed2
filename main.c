@@ -6,6 +6,7 @@
 #include "beamsearch.h"
 #define W 3
 
+//le entrada com atributos dos jobs
 void lerEntrada(Job** entrada, int n){
 	int i;
 	int tempo, deadline, multa;
@@ -16,6 +17,7 @@ void lerEntrada(Job** entrada, int n){
 	}
 }
 
+//libera o vetor de jobs
 void liberarEntrada(Job** entrada, int n){
 	int i;
 
@@ -44,18 +46,25 @@ int main(int argc, char* argv []){
 	lerEntrada(entrada, n);
 	imprimirEntrada(entrada, n);
 
+	//de qualquer maneira, o beamsearch terá de ser realizado
 	p = beamSearch(entrada, n, W);
 
+	//se entrada de usuario estiver definindo bb, o faz
 	if(strcmp(argv[1], "bb") == 0){
 		k = branchAndBound(entrada, p->lowerbound, n);
 	}
 	
+	// k pode ser nulo em dois casos:
+	// 1 - BB não foi realizado
+	// 2 - BB foi realizado mas a entrada já era o melhor caso
 	if(k == NULL){
 		imprimirResposta(p, n);
 	} else {
 		imprimirResposta(k, n);
+		liberarPermuta(k);
 	}
 
+	liberarPermuta(p);
 	liberarEntrada(entrada, n);
 
 	return 0;

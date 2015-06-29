@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "permuta.h"
 
+//aloca estrutura interface pra lista de permutas
 Lista* alocaLista(){
 	Lista* novo = (Lista*)malloc(sizeof(Lista));
 
@@ -12,6 +13,9 @@ Lista* alocaLista(){
 	return novo;
 }
 
+//seta as configuracoes da interface lista, de modo que esta fiquei pronta para
+//ser processada por um dos dois algoritmos, ou seja,
+//aloca a lista e já gera a raiz da "arvore" de permutacoes
 Lista* inicializaLista(Job** entrada, int n){
 	Lista* lista = alocaLista();
 	lista->primeiro = gerarRaiz(entrada, n);
@@ -21,6 +25,7 @@ Lista* inicializaLista(Job** entrada, int n){
 	return lista;
 }
 
+//aloca espaco na memoria para uma nova permuta
 Permuta* inicializaPermuta(int n){
 	Permuta* novo = (Permuta*)malloc(sizeof(Permuta));
 
@@ -36,6 +41,7 @@ Permuta* inicializaPermuta(int n){
 	return novo;
 }
 
+//aloca espaco na memoria para um job
 Job* inicializarJob(int id, int tproc, int deadline, int multa){
 	Job* novo = (Job*)malloc(sizeof(Job));
 
@@ -47,6 +53,8 @@ Job* inicializarJob(int id, int tproc, int deadline, int multa){
 	return novo;
 }
 
+//gera o primeiro nó da arvore de permutacoes,
+//ou seja, uma permuta sem nenhum job já ordenado
 Permuta* gerarRaiz(Job** entrada, int n){
 	int i;
 	Permuta* primeira = inicializaPermuta(n);
@@ -60,6 +68,8 @@ Permuta* gerarRaiz(Job** entrada, int n){
 	return primeira;
 }
 
+//adiciona um job ao vetor de jobs ordenados da permuta
+//e seta as configuracoes de tempo, lb e ub.
 void adicionarPosicionado(Permuta* p, Job* job){
 	p->posicionados[p->qtdePosicionados++]= job;
 
@@ -71,6 +81,8 @@ void adicionarPosicionado(Permuta* p, Job* job){
 	}
 }
 
+//adiciona um job ao vetor de jobs não ordenados da permuta
+//e seta as configuracoes de tempo, lb e ub.
 void adicionarNaoPosicionados(Permuta* p, Job* job){
 	p->a_pos[p->qtdeNaoPosicionados++] = job;
 	p->upperbound += job->multa;
@@ -79,6 +91,7 @@ void adicionarNaoPosicionados(Permuta* p, Job* job){
 		p->lowerbound += job->multa;
 }
 
+//faz copia de uma estrutura de permutacoes
 void copiarPermuta(Permuta* origem, Permuta* destino, int k){
 	int i;
 
@@ -141,6 +154,8 @@ Lista* inserir(Lista* lista, Permuta* p){
 	return lista;
 }
 
+//remove o ultimo elemento da lista
+//essa funcao só é usada pelo BS
 void removerUltimo(Lista* lista){
 	Permuta* frente = lista->primeiro;
 	Permuta* tras = NULL;
