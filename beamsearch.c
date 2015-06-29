@@ -37,5 +37,10 @@ Permuta* beamSearch(Job** entrada, int n, int w){
 
 	}
 
-	return lista->primeiro;
+	melhor = lista->primeiro;
+
+	lista->primeiro = lista->primeiro->proximo;
+	liberarLista(lista);
+
+	return melhor;
 }

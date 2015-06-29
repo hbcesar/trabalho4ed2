@@ -1,5 +1,5 @@
 all: COMPILAR
-	./trab4 bb 5 < entrada5.txt
+	./trab4 bb 60 < entrada15.txt
 
 COMPILAR:
 	gcc -c bb.c

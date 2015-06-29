@@ -9,56 +9,41 @@ Permuta* branchAndBound(Job** entrada, int limite, int n){
 	Permuta* filho = NULL;
 	int limiteUB = limite;
 	int i;
-	unsigned int flag = 0;
 
-	while(lista->primeiro != NULL){
+	while(!eFolha(lista->primeiro)){
 		//retira o primeiro elemento da lista para gerar seus filhos
 		item = lista->primeiro;
 		lista->primeiro = lista->primeiro->proximo;
+		lista->tamanho--;
 
-		//verifica se o melhor caso deve ser atualizado
+		//atualiza o limite atual
 		if(item->upperbound <= limiteUB){
-			//liberarPermuta(melhor);
-			melhor = item;
 			limiteUB = item->upperbound;
-			flag = 1;
-		} else if (item->lowerbound > limiteUB){
-			liberarPermuta(item);
-			continue;
 		}
 
 		//gera os filhos de item e (se for o caso) os insere na lista
 		for(i=0; i < item->qtdeNaoPosicionados; i++){
 			filho = criarFilho(item, n, i);
 
-			if(filho->lowerbound > limiteUB){
-				//caso tiverem um melhor caso pior do que o atual, são descartados
-				liberarPermuta(filho);
-			} else {
-				//senao, verifica se ele é muito legal
-				if(filho->upperbound <= limiteUB){
-					//liberarPermuta(melhor);
-					melhor = filho;
-					limiteUB = filho->upperbound;
-					flag = 1;
-				}
-
-				//e os insere na lista
+			//se o filho criado tiver um pior caso melhor do que o limite atual
+			//ou essa listinha marota tiver vazia,
+			//insere o pobre coitado
+			if((filho->upperbound <= limiteUB) || (lista->tamanho == 0)){
 				lista = inserir(lista, filho);
+			} else{
+				liberarPermuta(filho);
 			}
 		}
 
-		if(!flag){
-			//se o item atual nao tiver sido setado como o melhor, entao ele pode ser apagado
-			liberarPermuta(item);
-			flag = 0;
-		}
-
+		//libera esse menino do qual foram gerados filhos
+		liberarPermuta(item);
 	}
 
-	free(lista);
+	melhor = lista->primeiro;
 
-	//é importante notar que pode acontecer que seja retornado NULO, 
-	//neste caso significa que a entrada já era o melhor arranjo
+	lista->primeiro = lista->primeiro->proximo;
+	
+	liberarLista(lista);
+
 	return melhor;
 }

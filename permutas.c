@@ -209,3 +209,14 @@ void liberarPermuta(Permuta* p){
 	}
 }
 
+void liberarLista(Lista* lista){
+	Permuta* aux = lista->primeiro;
+
+	while(aux != NULL){
+		liberarPermuta(aux);
+		aux = aux->proximo;
+	}
+
+	free(lista);
+}
+
