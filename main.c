@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "permuta.h"
 #include "bb.h"
 #include "beamsearch.h"
+#define W 3
 
 void lerEntrada(Job** entrada, int n){
 	int i;
@@ -12,23 +14,6 @@ void lerEntrada(Job** entrada, int n){
 		scanf("%d %d %d", &tempo, &deadline, &multa);
 		entrada[i] = inicializarJob(i, tempo, deadline, multa);
 	}
-}
-
-Permuta* teste(Job** entrada, int n){
-	int i;
-	Permuta* teste = inicializaPermuta(n);
-
-	for(i=0; i < n; i++){
-		teste->posicionados[i] = entrada[i];
-		teste->qtdePosicionados++;
-		teste->upperbound += entrada[i]->multa;
-		teste->tempoDecorrido += entrada[i]->tproc;
-
-		if(entrada[i]->deadline < teste->tempoDecorrido)
-			teste->lowerbound += entrada[i]->multa;
-	}
-
-	return teste;
 }
 
 void liberarEntrada(Job** entrada, int n){
@@ -59,13 +44,13 @@ int main(int argc, char* argv []){
 	lerEntrada(entrada, n);
 	imprimirEntrada(entrada, n);
 
-	p = teste(entrada, n);
-	
-	k = branchAndBound(entrada, p->lowerbound, n);
-	//k = beamSearch(entrada, n, 2);
+	p = beamSearch(entrada, n, W);
 
+	if(strcmp(argv[1], "bb") == 0){
+		k = branchAndBound(entrada, p->lowerbound, n);
+	}
+	
 	if(k == NULL){
-		printf("K ta nulo viu?\n");
 		imprimirResposta(p, n);
 	} else {
 		imprimirResposta(k, n);

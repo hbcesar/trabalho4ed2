@@ -35,6 +35,7 @@ Lista* inicializaLista(Job** entrada, int n);
 Permuta* gerarRaiz(Job** entrada, int n);
 Permuta* criarFilho(Permuta* p, int n, int k);
 Lista* inserir(Lista* lista, Permuta* p);
+void removerUltimo(Lista* lista);
 int eFolha(Permuta* p);
 void imprimirEntrada(Job** entrada, int n);
 void imprimirResposta(Permuta* p, int n);

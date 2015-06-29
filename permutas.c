@@ -16,6 +16,7 @@ Lista* inicializaLista(Job** entrada, int n){
 	Lista* lista = alocaLista();
 	lista->primeiro = gerarRaiz(entrada, n);
 	lista->ultimo = lista->primeiro;
+	lista->tamanho = 1;
 
 	return lista;
 }
@@ -61,7 +62,6 @@ Permuta* gerarRaiz(Job** entrada, int n){
 
 void adicionarPosicionado(Permuta* p, Job* job){
 	p->posicionados[p->qtdePosicionados++]= job;
-	//p->qtdeNaoPosicionados--;
 
 	p->tempoDecorrido += job->tproc;
 
@@ -78,40 +78,6 @@ void adicionarNaoPosicionados(Permuta* p, Job* job){
 	if(p->tempoDecorrido + job->tproc > job->deadline)
 		p->lowerbound += job->multa;
 }
-
-// void copiarPermuta(Permuta* origem, Permuta* destino, int k){
-// 	int i, j;
-
-// 	//copia todos os campos da estrutura
-// 	//nesse caso vemos que upper bound tb copia o lower bound,
-// 	//pois este ainda será incrementado.
-// 	// destino->lowerbound = origem->lowerbound;
-// 	// destino->upperbound = origem->lowerbound;
-// 	destino->tempoDecorrido = origem->tempoDecorrido;
-// 	destino->qtdePosicionados = origem->qtdePosicionados;
-// 	destino->qtdeNaoPosicionados = origem->qtdeNaoPosicionados;
-
-// 	//copia o vetor de jobs posicionados
-// 	for(i = 0; i < origem->qtdePosicionados; i++){
-// 		destino->posicionados[i] = origem->posicionados[i];
-
-// 	}
-
-// 	//copia o vetor de não posicionados, pulando o infeliz que vai ser posicionado
-// 	//e atualizando os LB e UP.
-// 	for(i=0, j=0; i < origem->qtdeNaoPosicionados; i++, j++){
-// 		if(i == k){
-// 			j--;
-// 		} else {
-// 			destino->a_pos[j] = origem->a_pos[i];
-// 			destino->upperbound += destino->a_pos[j]->multa;
-// 			if(destino->a_pos[j]->deadline < destino->tempoDecorrido){
-// 				destino->lowerbound += destino->a_pos[j]->multa;
-// 			}
-// 		}
-// 	}
-
-// }
 
 void copiarPermuta(Permuta* origem, Permuta* destino, int k){
 	int i;
@@ -134,6 +100,7 @@ Permuta* criarFilho(Permuta* p, int n, int k){
 	int i;
 	Permuta* nova = inicializaPermuta(n);
 
+	//copia a permuta, sem adicionar novo menino a ser posicionado
 	copiarPermuta(p, nova, k);
 
 	//copia o menino que vai ser posicionado pro lugarzinho dele
@@ -146,33 +113,6 @@ Permuta* criarFilho(Permuta* p, int n, int k){
 Lista* inserir(Lista* lista, Permuta* p){
 	Permuta* frente = NULL;
 	Permuta* tras = NULL;
-
-	// if(lista->primeiro == NULL){
-	// 	lista->primeiro = p;
-	// 	lista->ultimo = p;
-	// } else {
-	// 	if(p->lowerbound <= lista->primeiro->lowerbound){
-	// 		//caso o elemento deva ser inserido na primeira posicao
-	// 		p->proximo = lista->primeiro;
-	// 		lista->primeiro = p;
-	// 	} else if (p->lowerbound >= lista->ultimo->lowerbound){
-	// 		//caso o elemento deva ser inserido na ultima posicao
-	// 		p->proximo = lista->ultimo;
-	// 		// lista->ultimo->proximo = p;
-	// 		// lista->ultimo = p;
-	// 	} else {
-	// 		//caso nao seja nem o ultimo ou o primeiro, procura posicao correta
-	// 		frente = lista->primeiro;
-
-	// 		while((frente != NULL) && (frente->lowerbound < p->lowerbound)){
-	// 			tras = frente;
-	// 			frente = frente->proximo;
-	// 		}
-
-	// 		tras->proximo = p;
-	// 		p->proximo = frente;
-	// 	}
-	// }
 
 	if(lista->primeiro == NULL){
 		lista->primeiro = p;
@@ -201,6 +141,23 @@ Lista* inserir(Lista* lista, Permuta* p){
 	return lista;
 }
 
+void removerUltimo(Lista* lista){
+	Permuta* frente = lista->primeiro;
+	Permuta* tras = NULL;
+
+	while(frente != NULL){
+		tras = frente;
+		frente = frente->proximo;
+	}
+
+	lista->ultimo = tras;
+	tras->proximo = NULL;
+
+	liberarPermuta(frente);
+
+	lista->tamanho--;
+}
+
 int eFolha(Permuta* p){
 	if(p->qtdeNaoPosicionados == 0){
 		return 1;
@@ -224,25 +181,6 @@ void imprimirResposta(Permuta* p, int n){
 
 	for(i=0; i < p->qtdePosicionados; i++){
 		printf(" %d", p->posicionados[i]->id);
-	}
-
-	printf("\n");
-}
-
-void imprimir(Permuta* p){
-	int i;
-
-	printf("UB e LB: %d %d\n", p->upperbound, p->lowerbound);
-	printf("qtdePosicionados e qtdeNaoPosicionados: %d %d\nPosicionados: ", p->qtdePosicionados, p->qtdeNaoPosicionados);
-
-	for(i=0; i < p->qtdePosicionados; i++){
-		printf(" %d", p->posicionados[i]->id);
-	}
-
-	printf("\nA posicionar:");
-
-	for(i=0; i < p->qtdeNaoPosicionados; i++){
-		printf(" %d", p->a_pos[i]->id);
 	}
 
 	printf("\n");

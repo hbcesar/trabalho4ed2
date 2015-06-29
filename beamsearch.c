@@ -2,67 +2,39 @@
 #include <stdlib.h>
 #include "permuta.h"
 
-void removerUltimo(Lista* lista){
-	Permuta* frente = NULL;
-	Permuta* tras = NULL;
-
-	while(frente != lista->ultimo){
-		tras = frente;
-		frente = frente->proximo;
-	}
-
-	lista->ultimo = tras;
-	tras->proximo = NULL;
-
-	liberarPermuta(frente);
-
-	lista->tamanho--;
-}
-
 Permuta* beamSearch(Job** entrada, int n, int w){
 	Lista* lista = inicializaLista(entrada, n);
 	Permuta* item = NULL;
 	Permuta* melhor = NULL;
 	Permuta* filho = NULL;
-	// int limiteUB = limite;
 	int i;
 
-	while(lista->primeiro != NULL){
+	//nesse caso, assume que quando a primeira folha for gerada, ela estará no número minimo de W menores LB da heuristica
+	while(!eFolha(lista->primeiro)){
 		//retira o primeiro elemento da lista para gerar seus filhos
 		item = lista->primeiro;
 		lista->primeiro = lista->primeiro->proximo;
 		lista->tamanho--;
+		
+		for(i=0; i < item->qtdeNaoPosicionados; i++){
 
-		if(!eFolha(item)){
-			if(item->lowerbound > lista->ultimo->){
-				liberarPermuta(item);
-			} else {
-		 		//gera os filhos de item e (se for o caso) os insere na lista
-				for(i=0; i < item->qtdeNaoPosicionados; i++){
-					filho = criarFilho(item, n, i);
-					if(lista->tamanho < w || filho->lowerbound < lista->ultimo->lowerbound){
-					 	if(lista->tamanho > w){
-					 		removerUltimo(lista);
-					 	}
-					 	lista = inserir(lista, filho);
-					} else {
-						liberarPermuta(filho);
-					 	
-					}
+			filho = criarFilho(item, n, i);
+
+			//se a lista ainda precisar atingir o tamanho 
+			//ou se esse menino que vier a ser inserido for melhor que o pior que tiver na lista (the last one),
+			//entao insere
+			if(lista->tamanho < w || filho->lowerbound < lista->ultimo->lowerbound){
+				lista = inserir(lista, filho);
+
+				if(lista->tamanho > w){
+					removerUltimo(lista);
 				}
-				liberarPermuta(item);
+
+			} else {
+				liberarPermuta(filho);
 			}
-		} 
-		// else {
-		// 	if(item->lowerbound >= limiteUB){
-		// 		liberarPermuta(item);
-		// 	} else {
-		// 		if(item->upperbound < limiteUB){
-		// 			melhor = item;
-		// 			limiteUB = item->upperbound;
-		// 		}
-		// 	}
-		// }
+		}
+
 	}
 
 	return lista->primeiro;

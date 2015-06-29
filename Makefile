@@ -5,5 +5,5 @@ COMPILAR:
 	gcc -c bb.c
 	gcc -c permutas.c
 	gcc -c main.c
-	#gcc -c beamsearch.c
-	gcc bb.o permutas.o main.o -o trab4
+	gcc -c beamsearch.c
+	gcc bb.o beamsearch.o permutas.o main.o -o trab4
