@@ -53,6 +53,8 @@ int main(int argc, char* argv []){
 	if(strcmp(argv[1], "bb") == 0){
 		k = branchAndBound(entrada, p->lowerbound, n);
 	}
+
+	printf("SAAAAIUUUU\n");
 	
 	// k pode ser nulo em dois casos:
 	// 1 - BB não foi realizado

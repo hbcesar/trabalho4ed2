@@ -160,7 +160,7 @@ void removerUltimo(Lista* lista){
 	Permuta* frente = lista->primeiro;
 	Permuta* tras = NULL;
 
-	while(frente != NULL){
+	while(frente->proximo != NULL){
 		tras = frente;
 		frente = frente->proximo;
 	}

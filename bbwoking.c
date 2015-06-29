@@ -9,7 +9,7 @@ Permuta* branchAndBound(Job** entrada, int limite, int n){
 	Permuta* filho = NULL;
 	int limiteUB = limite;
 	int i;
-	unsigned int flag = 0;
+	unsigned int flag= 0;
 
 	while(lista->primeiro != NULL){
 		//retira o primeiro elemento da lista para gerar seus filhos
@@ -18,7 +18,7 @@ Permuta* branchAndBound(Job** entrada, int limite, int n){
 
 		//verifica se o melhor caso deve ser atualizado
 		if(item->upperbound <= limiteUB){
-			//liberarPermuta(melhor);
+			liberarPermuta(melhor);
 			melhor = item;
 			limiteUB = item->upperbound;
 			flag = 1;
@@ -31,25 +31,16 @@ Permuta* branchAndBound(Job** entrada, int limite, int n){
 		for(i=0; i < item->qtdeNaoPosicionados; i++){
 			filho = criarFilho(item, n, i);
 
+			//caso tiverem um melhor caso pior do que o atual, são descartados
 			if(filho->lowerbound > limiteUB){
-				//caso tiverem um melhor caso pior do que o atual, são descartados
 				liberarPermuta(filho);
 			} else {
-				//senao, verifica se ele é muito legal
-				if(filho->upperbound <= limiteUB){
-					//liberarPermuta(melhor);
-					melhor = filho;
-					limiteUB = filho->upperbound;
-					flag = 1;
-				}
-
-				//e os insere na lista
 				lista = inserir(lista, filho);
 			}
 		}
 
 		if(!flag){
-			//se o item atual nao tiver sido setado como o melhor, entao ele pode ser apagado
+			//printf("teste\n");
 			liberarPermuta(item);
 			flag = 0;
 		}
